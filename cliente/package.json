@@ -1,0 +1,8 @@
+{
+	"name": "prueba",
+	"main": "index.html",
+	"window" :{
+		"toolbar" : false,
+		"frame": false
+	}
+}
