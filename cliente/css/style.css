@@ -1,0 +1,31 @@
+.cabezera{
+	-webkit-app-region: drag;
+	-webkit-user-select: none;
+}
+
+.controles{
+	-webkit-app-region: no-drag;
+	
+}
+.pie{
+	position: relative;
+	bottom: 0;
+}
+.dinamico{
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+}
+
+.maximo{
+	width: 100%;
+}
+#texto{
+	width: 100%;
+}
+
+#conversacion{
+	border: 1px 1px 1px 1px;
+	overflow-y: scroll;
+	height: 200px;
+}
