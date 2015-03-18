@@ -4,6 +4,10 @@ win.isMaximizada = false;
 
 function carga()
 {
+	var tamano = win.height-26-72;
+	tamano= tamano+"px";
+	console.log(tamano);
+	document.getElementById("conversacion").style.height=tamano;
 	win.on("maximize",function()
 	{
 		win.isMaximizada = true;
@@ -13,7 +17,7 @@ function carga()
 		win.isMaximizada = false;
 	});
 	win.on('resize',function(width,height){
-		var tamano = win.height-26-72;
+		var tamano = height-26-72;
 		tamano= tamano+"px";
 		console.log(tamano);
 		document.getElementById("conversacion").style.height=tamano;
