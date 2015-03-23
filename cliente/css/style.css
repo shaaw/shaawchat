@@ -28,4 +28,52 @@
 	border: 1px 1px 1px 1px;
 	overflow-y: scroll;
 	height: 200px;
+	white-space: normal;
+	word-wrap: break-word;
+	overflow-x: hidden;
+	vertical-align: middle;
+}
+
+.nick{
+	font-weight: bold;
+	color: blue;
+	vertical-align: middle;
+	width: 100px;
+	float: left;
+	display: block;
+}
+.textoconv{
+	float: left;
+	display: inline;
+	height: auto;
+
+}
+
+.fila
+{
+	margin-bottom: -20px;
+	margin-left: 5px;
+	margin-right: 0px;
+	vertical-align: middle;
+
+	font-size: 12px;
+}
+
+
+.btnenviar {
+	font-family: Arial;
+
+	color: #ffffff;
+	font-size: 10px;
+	background: #30ad29;
+	padding: 5px 10px 5px 10px;
+	text-decoration: none;
+	border: solid #1f628d 0px;
+}
+
+.btnenviar:hover {
+	background: #1AD727;
+	text-decoration: none;
+
+
 }
