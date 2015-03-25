@@ -48,6 +48,24 @@ function redimensionarV(valor)
 
 function carga()
 {
+	$(document).keypress(function(event){
+		var keynum;
+
+            if(window.event){ // IE					
+            	keynum = event.keyCode;
+            }else
+            {
+                if(event.which){ // Netscape/Firefox/Opera					
+                	keynum = event.which;
+                }
+            }
+            if(keynum== 13 && $("#texto").is(":focus"))
+            {
+            	enviar();
+            }
+            
+        })
+
 	redimensionarV(0);
 
 
@@ -120,7 +138,7 @@ function carga()
 			var actual = buffer.substring(0,buffer.indexOf('\n'));
 			buffer = buffer.substring(buffer.indexOf('\n')+1);
 
-			
+
 
 			procesar(actual);
 
@@ -184,16 +202,16 @@ function enviar()
 
 		$("#conversacion").append("<br \><div class='row fila'><div class='nick'>Shaaw</div><div class='textoconv'><p>"+$("#texto").val()+"</p></div></div>");
 		$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
-		
+
 
 	}else
 	{
 		$("#conversacion").append("<br \><div class='row fila'><div class='nick'>Shaaw</div><div class='textoconv'><p>"+$("#texto").val()+"</p></div></div>");
-		
+
 	}
-	
+
 	s.write("PRIVMSG #"+canal + " :"+$("#texto").val()+"\n");
 	$("#texto").val("");
 	$("#texto").focus();
-	
+
 }
