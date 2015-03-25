@@ -7,17 +7,51 @@ var s = require("net").Socket();
 
 var conectado = false;
 
-var canal= "capcomfighters";
+var canal= "steel_tv";
+
+var buffer = "";
+
+function procesar (linea)
+{
+
+	if(buffer.substring(0,4)=="PING")
+	{
+		s.write("PONG tmi.twitch.tv\r\n");
+	}
+
+	if($("#conversacion").scrollTop()+ $("#conversacion").height()== $("#conversacion")[0].scrollHeight)
+	{
+		$("#conversacion").append("<br \><div class='row fila'><div class='nick'>Shaaw</div><div class='textoconv'><p>"+linea+"</p></div></div>");
+		$("#texto").focus();
+		$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
+	}else
+	{
+		$("#conversacion").append("<br \><div class='row fila'><div class='nick'>Shaaw</div><div class='textoconv'><p>"+linea+"</p></div></div>");
+		$("#texto").focus();
+	}
+
+}
+
+function redimensionarH(valor)
+{
+
+	var tamano2 = $(".fila").width() - 150-5;
+	$(".textoconv").width(tamano2+"px");
+}
+
+function redimensionarV(valor)
+{
+	var tamano = win.height-26-72-valor;
+	tamano= tamano+"px";
+	document.getElementById("conversacion").style.height=tamano;
+}
 
 function carga()
 {
-	var tamano = win.height-26-72;
-	tamano= tamano+"px";
-	document.getElementById("conversacion").style.height=tamano;
+	redimensionarV(0);
 
 
-	var tamano2 = $(".fila").width() - 150;
-	$(".textoconv").width(tamano2+"px");
+	redimensionarH(null);
 
 	win.on("maximize",function()
 	{
@@ -28,10 +62,7 @@ function carga()
 		{
 			addicional= 20;
 		}
-		var tamano = win.height-26-72-addicional;
-
-		tamano= tamano+"px";
-		document.getElementById("conversacion").style.height=tamano;
+		redimensionarV(addicional);
 	});
 	win.on("unmaximize",function()
 	{
@@ -81,28 +112,29 @@ function carga()
 	});
 
 	s.on("data",function(data){
-		if($("#conversacion").scrollTop()+ $("#conversacion").height()== $("#conversacion")[0].scrollHeight)
-		{
-			$("#conversacion").append("<br \><div class='row fila'><div class='nick'>Shaaw</div><div class='textoconv'><p>"+data+"</p></div></div>");
-			$("#texto").focus();
-			$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
-		}else
-		{
-			$("#conversacion").append("<br \><div class='row fila'><div class='nick'>Shaaw</div><div class='textoconv'><p>"+data+"</p></div></div>");
-			$("#texto").focus();
-		}
-		var tamano2 = $(".fila").width() - 155;
-		$(".textoconv").width(tamano2+"px");
-		if(conectado == false)
-		{
-			conectado = true;
-			s.write("JOIN #"+canal+"\n");
-			s.write("TWITCHCLIENT 1\n");
-		}
 
-		if(data.substring(0,4)=="PING")
+		buffer += data;
+
+		while(buffer.indexOf('\n') != -1)
 		{
-			s.write("PONG tmi.twitch.tv\r\n");
+			var actual = buffer.substring(0,buffer.indexOf('\n'));
+			buffer = buffer.substring(buffer.indexOf('\n')+1);
+
+			
+
+			procesar(actual);
+
+
+			redimensionarH(null);
+
+			if(conectado == false)
+			{
+				conectado = true;
+				s.write("JOIN #"+canal+"\n");
+				s.write("TWITCHCLIENT 1\n");
+			}
+
+
 		}
 	});
 
@@ -119,6 +151,7 @@ function carga()
 
 	s.write("PASS "+token+"\n");
 	s.write("NICK shaawsc2\n");
+
 }
 
 function cerrar()
