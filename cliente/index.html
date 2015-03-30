@@ -9,7 +9,7 @@
 	<title>Prueba</title>
 </head>
 <body onload="carga();">
-	<nav class="navbar navbar-default cabezera">
+	<nav id="cabecera" class="navbar navbar-default cabezera">
 		<div class="container-fluid">
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
@@ -20,6 +20,17 @@
 					<span class="icon-bar"></span>
 				</button>
 				<a class="navbar-brand" href="#">TwitchChat</a>
+			</div>
+			<ul class="nav navbar-nav">
+				<li>
+					<a class="controles" href="#" onclick="ventanaConectar();">Conectar</a>
+				</li>
+			</ul>
+			<div class="navbar-form navbar-left" role="search">
+				<div class="form-group">
+					<input id="canal" type="text"  placeholder="Canal">
+				</div>
+				<button id="botonCanal" class="btn btn-default btn-sm" onclick="unirse();">Unirse</button>
 			</div>
 
 			<!-- Collect the nav links, forms, and other content for toggling -->
@@ -42,11 +53,11 @@
 				<div id="conversacion">
 					<div class="row fila">
 						<div class="nick">
-							Shaaw
+							System
 						</div>
 						<div class="textoconv">
 							<p>
-								asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf asdfasdfdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf
+								Bienvenid@ al programa de chat de Shaaw, pulsa el boton conectar de arriba y sigue los pasos y despues unete a un canal.
 							</p>
 						</div>
 					</div>
@@ -54,7 +65,8 @@
 				</div>
 			</div>
 			<div class="col-xs-2">
-
+				<select multiple name="nicks" id="nicks" class="form-control">
+				</select>
 			</div>
 		</div>
 	</div>

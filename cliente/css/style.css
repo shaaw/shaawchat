@@ -8,6 +8,7 @@
 	
 }
 .pie{
+	
 	position: relative;
 	bottom: 0;
 }
@@ -76,4 +77,25 @@
 	text-decoration: none;
 
 
+}
+
+#nicks{
+
+	margin-bottom: 0px;
+	margin-top: 0px;
+}
+
+#cabecera{
+	background-color: #A38DE3;
+}
+
+#canal
+{
+	-webkit-app-region: no-drag;
+	
+}
+
+#botonCanal
+{
+	-webkit-app-region: no-drag;
 }

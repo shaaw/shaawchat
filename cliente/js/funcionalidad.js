@@ -1,32 +1,103 @@
-var gui = require("nw.gui");
-var win = gui.Window.get();
-win.isMaximizada = false;
-var token = "oauth:h9qxzvmbkd6snnjb9to1fp7hsf8652";
+global.gui = require("nw.gui");
+global.win = global.gui.Window.get();
+global.win.isMaximizada = false;
 
-var s = require("net").Socket();
+global.nueva;
 
-var conectado = false;
+global.s = require("net").Socket();
 
-var canal= "steel_tv";
+global.conectado = false;
 
-var buffer = "";
+global.canal= "imaqtpie";
+
+global.buffer = "";
+
+function ventanaConectar()
+{
+	global.win.blur();
+	global.nueva = global.gui.Window.open("conectar.html", {
+		position: 'center',
+		width: 600,
+		height: 300,
+		toolbar : false,
+		frame: false,
+		resize: false
+	});
+
+	global.nueva.on("close",function()
+	{
+		if(global.conectar)
+		{
+			global.s.connect(6667, "irc.twitch.tv",function(){
+				global.nueva.close(true);
+			});
+
+			global.s.on("data",function(data){
+
+				global.buffer += data;
+
+				global.conectado = true;
+
+				while(global.buffer.indexOf('\n') != -1)
+				{
+					var actual = global.buffer.substring(0,global.buffer.indexOf('\n'));
+					global.buffer = global.buffer.substring(global.buffer.indexOf('\n')+1);
+
+					procesar(actual);
+
+					
+
+					
+				}
+			});
+
+			global.s.on("error",function()
+			{
+				alert("error");
+			});
+
+			global.s.on("close",function(){
+				global.conectado = false;
+				alert("cerrar");
+				global.s.end();
+			})
+			alert(localStorage.nick);
+
+			global.s.write("PASS "+localStorage.token+"\n");
+			global.s.write("NICK "+localStorage.nick+"\n");
+			global.s.write("CAP REQ :twitch.tv/tags\n");
+		}
+		global.nueva.close(true);
+	});
+
+	global.win.on("close",function()
+	{
+		global.s.end();
+		this.close(true);
+	});
+}
+
+
+
 
 function procesar (linea)
 {
 
-	if(buffer.substring(0,4)=="PING")
+	if(linea.substring(0,4)=="PING")
 	{
-		s.write("PONG tmi.twitch.tv\r\n");
+		global.s.write("PONG tmi.twitch.tv\r\n");
 	}
 
 	if($("#conversacion").scrollTop()+ $("#conversacion").height()== $("#conversacion")[0].scrollHeight)
 	{
 		$("#conversacion").append("<br \><div class='row fila'><div class='nick'>Shaaw</div><div class='textoconv'><p>"+linea+"</p></div></div>");
+		redimensionarH(null);
 		$("#texto").focus();
 		$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
 	}else
 	{
 		$("#conversacion").append("<br \><div class='row fila'><div class='nick'>Shaaw</div><div class='textoconv'><p>"+linea+"</p></div></div>");
+		redimensionarH(null);
 		$("#texto").focus();
 	}
 
@@ -41,9 +112,10 @@ function redimensionarH(valor)
 
 function redimensionarV(valor)
 {
-	var tamano = win.height-26-72-valor;
-	tamano= tamano+"px";
-	document.getElementById("conversacion").style.height=tamano;
+	var tamano = global.win.height-26-72-valor;
+	document.getElementById("conversacion").style.height=tamano+"px";
+
+	$("#nicks").height((tamano-20)+ "px");
 }
 
 function carga()
@@ -71,34 +143,37 @@ function carga()
 
 	redimensionarH(null);
 
-	win.on("maximize",function()
+	global.win.on("maximize",function()
 	{
 
-		win.isMaximizada = true;
+		global.win.isMaximizada = true;
 		var addicional =0;
-		if(win.isMaximizada)
+		if(global.win.isMaximizada)
 		{
 			addicional= 20;
 		}
 		redimensionarV(addicional);
 	});
-	win.on("unmaximize",function()
+	global.win.on("unmaximize",function()
 	{
-		win.isMaximizada = false;
+		global.win.isMaximizada = false;
 	});
-	win.on('resize',function(width,height){
-		console.log("resice");
+	global.win.on('resize',function(width,height){
+		console.log("resize");
 		var addicional =0;
-		if(win.isMaximizada)
+		if(global.win.isMaximizada)
 		{
 			addicional= 15;
 		}
 		var tamano = height-26-72-addicional;
-		tamano= tamano+"px";
-		document.getElementById("conversacion").style.height=tamano;
+
+		document.getElementById("conversacion").style.height=tamano+"px";
 
 		var tamano2 = $(".fila").width() - 155;
 		$(".textoconv").width(tamano2+"px");
+
+		$("#nicks").height((tamano-20)+ "px");
+
 	});
 
 
@@ -115,81 +190,38 @@ function carga()
 		}
 	};
 
-	var shortcut = new gui.Shortcut(option);
 
-	shortcut.on('active', function() {
-		console.log("Global desktop keyboard shortcut: " + this.key + " active."); 
-	});
+	
 
-	shortcut.on('failed', function(msg) {
-		console.log(msg);
-	});
+}
 
-	s.connect(6667, "irc.twitch.tv",function(){
-		alert("conectado");
-	});
-
-	s.on("data",function(data){
-
-		buffer += data;
-
-		while(buffer.indexOf('\n') != -1)
-		{
-			var actual = buffer.substring(0,buffer.indexOf('\n'));
-			buffer = buffer.substring(buffer.indexOf('\n')+1);
-
-
-
-			procesar(actual);
-
-
-			redimensionarH(null);
-
-			if(conectado == false)
-			{
-				conectado = true;
-				s.write("JOIN #"+canal+"\n");
-				s.write("TWITCHCLIENT 1\n");
-			}
-
-
-		}
-	});
-
-	s.on("error",function()
+function unirse()
+{
+	if(global.conectado == true)
 	{
-		alert("error");
-	});
-
-	s.on("close",function(){
-		conectado = false;
-		alert("cerrar");
-		s.end();
-	})
-
-	s.write("PASS "+token+"\n");
-	s.write("NICK shaawsc2\n");
-
+		global.canal = $("#canal").val();
+		global.s.write("JOIN #"+global.canal+"\n");
+	}
 }
 
 function cerrar()
 {
-	win.close();
+	global.win.close();
 }
 
 function minimizar()
 {
-	win.minimize(); 
+	global.win.minimize(); 
 }
 
 function maximizar()
 {
-	if(win.isMaximizada)
+	if(global.win.isMaximizada)
 	{
-		win.unmaximize();
+		global.win.unmaximize();
 	}else
 	{
-		win.maximize();
+		global.win.maximize();
 	}
 }
 
@@ -210,7 +242,7 @@ function enviar()
 
 	}
 
-	s.write("PRIVMSG #"+canal + " :"+$("#texto").val()+"\n");
+	global.s.write("PRIVMSG #"+global.canal + " :"+$("#texto").val()+"\n");
 	$("#texto").val("");
 	$("#texto").focus();
 
