@@ -14,7 +14,6 @@ global.buffer = "";
 
 function ventanaConectar()
 {
-	global.win.blur();
 	global.nueva = global.gui.Window.open("conectar.html", {
 		position: 'center',
 		width: 600,
@@ -54,11 +53,12 @@ function ventanaConectar()
 
 
 		}
-	});
-
 
 		global.nueva.close(true);
 	});
+
+
+
 
 	
 }

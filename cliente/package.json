@@ -2,8 +2,8 @@
   "name": "prueba",
   "main": "index.html",
   "window": {
-    "toolbar": false,
-    "frame": false,
+    "toolbar": true,
+    "frame": true,
     "width": 850,
     "min_width": 800
   },

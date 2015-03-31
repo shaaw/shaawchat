@@ -27,6 +27,7 @@ function abrirBrowser()
 
 function cargar()
 {
+	global.nueva.show();
 	$("#nick").val(localStorage.nick);
 	$("#token").val(localStorage.token);
 }
