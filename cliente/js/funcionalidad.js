@@ -4,11 +4,11 @@ global.win.isMaximizada = false;
 
 global.nueva;
 
-global.s = require("net").Socket();
+global.irc = require("twitch-irc");
 
 global.conectado = false;
 
-global.canal= "imaqtpie";
+global.canal= "";
 
 global.buffer = "";
 
@@ -25,78 +25,60 @@ function ventanaConectar()
 	});
 
 	global.nueva.on("close",function()
-	{
+	{	
 		if(global.conectar)
 		{
-			global.s.connect(6667, "irc.twitch.tv",function(){
-				global.nueva.close(true);
-			});
-
-			global.s.on("data",function(data){
-
-				global.buffer += data;
-
-				global.conectado = true;
-
-				while(global.buffer.indexOf('\n') != -1)
+			var clientOptions = {
+				options:
 				{
-					var actual = global.buffer.substring(0,global.buffer.indexOf('\n'));
-					global.buffer = global.buffer.substring(global.buffer.indexOf('\n')+1);
+					debug : true,
 
-					procesar(actual);
-
-					
-
-					
+				},
+				identity: {
+					username: localStorage.nick,
+					password: localStorage.token
 				}
-			});
+			}
 
-			global.s.on("error",function()
+			global.nueva.close(true);
+			
+			global.client = new irc.client(clientOptions);
+			global.client.conect();
+
+			global.client.addListener('chat', function(channel,user,message)
 			{
-				alert("error");
-			});
 
-			global.s.on("close",function(){
-				global.conectado = false;
-				alert("cerrar");
-				global.s.end();
-			})
-			alert(localStorage.nick);
+				procesar(user,messsage);
 
-			global.s.write("PASS "+localStorage.token+"\n");
-			global.s.write("NICK "+localStorage.nick+"\n");
-			global.s.write("CAP REQ :twitch.tv/tags\n");
+			});	
+
+
 		}
+	});
+
+
 		global.nueva.close(true);
 	});
 
-	global.win.on("close",function()
-	{
-		global.s.end();
-		this.close(true);
-	});
+	
 }
 
 
 
 
-function procesar (linea)
+function procesar (user,linea)
 {
 
-	if(linea.substring(0,4)=="PING")
-	{
-		global.s.write("PONG tmi.twitch.tv\r\n");
-	}
 
 	if($("#conversacion").scrollTop()+ $("#conversacion").height()== $("#conversacion")[0].scrollHeight)
 	{
-		$("#conversacion").append("<br \><div class='row fila'><div class='nick'>Shaaw</div><div class='textoconv'><p>"+linea+"</p></div></div>");
+		$("#conversacion").append("<br \><div class='row fila'><div class='nick' style='color:  "+user.color+"'>"+user.username+"</div><div class='textoconv'><p>"+linea+"</p></div></div>");
 		redimensionarH(null);
 		$("#texto").focus();
 		$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
 	}else
 	{
-		$("#conversacion").append("<br \><div class='row fila'><div class='nick'>Shaaw</div><div class='textoconv'><p>"+linea+"</p></div></div>");
+		$("#conversacion").append("<br \><div class='row fila'><div class='nick' style='color:  "+user.color+"'>"+user.username+"</div><div class='textoconv'><p>"+linea+"</p></div></div>");
 		redimensionarH(null);
 		$("#texto").focus();
 	}
@@ -177,20 +159,6 @@ function carga()
 	});
 
 
-	var option = {
-		key : "Enter",
-		active : function(){
-
-			$("#conversacion").append("<br \><div class='row fila'><div class='nick'>Shaaw</div><div class='textoconv'><p>"+$("#texto").val()+"</p></div></div>");
-			$("#texto").val("");
-			$("#texto").focus();
-		},
-		failed : function(msg) {
-			console.log(msg);
-		}
-	};
-
-
 	
 
 }
@@ -199,8 +167,7 @@ function unirse()
 {
 	if(global.conectado == true)
 	{
-		global.canal = $("#canal").val();
-		global.s.write("JOIN #"+global.canal+"\n");
+		global.join(global.canal);
 	}
 }
 
@@ -242,7 +209,7 @@ function enviar()
 
 	}
 
-	global.s.write("PRIVMSG #"+global.canal + " :"+$("#texto").val()+"\n");
+	global.client.say(global.canal,$('#texto').val());
 	$("#texto").val("");
 	$("#texto").focus();
 

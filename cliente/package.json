@@ -1,10 +1,13 @@
 {
-	"name": "prueba",
-	"main": "index.html",
-	"window" :{
-		"toolbar" : false,
-		"frame": false,
-		"width": 850,
-		"min_width": 800
-	}
+  "name": "prueba",
+  "main": "index.html",
+  "window": {
+    "toolbar": false,
+    "frame": false,
+    "width": 850,
+    "min_width": 800
+  },
+  "dependencies": {
+    "twitch-irc": "~1.2.5"
+  }
 }
