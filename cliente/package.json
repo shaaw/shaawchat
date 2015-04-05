@@ -2,12 +2,13 @@
   "name": "prueba",
   "main": "index.html",
   "window": {
-    "toolbar": true,
-    "frame": true,
+    "toolbar": false,
+    "frame": false,
     "width": 850,
     "min_width": 800
   },
   "dependencies": {
+    "request": "^2.54.0",
     "twitch-irc": "~1.2.5"
   }
 }

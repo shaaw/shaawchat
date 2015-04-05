@@ -60,6 +60,12 @@
 	font-size: 12px;
 }
 
+.timeStamp
+{
+	color:#4E4949;
+	font-size: 8px;
+}
+
 
 .btnenviar {
 	font-family: Arial;
@@ -98,4 +104,15 @@
 #botonCanal
 {
 	-webkit-app-region: no-drag;
+}
+
+.moderador{
+	color: red;
+}
+
+.staff{
+	color: purple;
+}
+.viewer{
+
 }
