@@ -92,7 +92,8 @@
 }
 
 #cabecera{
-	background-color: #A38DE3;
+	border-width: 0px 0px 0px 0px;
+	border-radius: 0px;
 }
 
 #canal

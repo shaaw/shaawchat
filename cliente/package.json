@@ -1,6 +1,7 @@
 {
   "name": "prueba",
   "main": "index.html",
+  "version" : 0.1,
   "window": {
     "toolbar": false,
     "frame": false,

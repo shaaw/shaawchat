@@ -16,90 +16,6 @@ global.canal= "skadoodle";
 
 global.buffer = "";
 
-function ventanaConectar()
-{
-	global.nueva = global.gui.Window.open("conectar.html", {
-		position: 'center',
-		width: 600,
-		height: 300,
-		toolbar : false,
-		frame: false,
-		resize: false
-	});
-
-	global.nueva.on("close",function()
-	{	
-		if(global.conectar)
-		{
-			var clientOptions = {
-				options:
-				{
-					debug : true
-
-				},
-				identity: {
-					username: localStorage.nick,
-					password: localStorage.token
-				},
-				channels: []
-			}
-
-			global.nueva.close(true);
-
-			
-			global.client = new global.irc.client(clientOptions);
-			global.client.addListener('connectfail', function () {
-				alert("fallo");
-			});
-
-			global.client.addListener('crash', function (message, stack) {
-				alert(message+" "+stack);
-			});
-
-
-			global.client.connect().then(function()
-			{
-				global.conectado = true;
-
-				if($("#conversacion").scrollTop()+ $("#conversacion").height()== $("#conversacion")[0].scrollHeight)
-				{
-
-
-					$("#conversacion").append("<br \><div class='row fila'><div class='nick'>System</div><div class='textoconv'><p>Conectado</p></div></div>");
-					$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
-
-
-				}else
-				{
-					$("#conversacion").append("<br \><div class='row fila'><div class='nick'>System</div><div class='textoconv'><p>Conectado</p></div></div>");
-
-				}
-
-
-
-			});
-
-			global.client.addListener('chat', function(channel,user,message)
-			{
-
-				procesar(user,message);
-
-			});	
-
-
-		}
-
-		global.nueva.close(true);
-	});
-
-
-
-
-
-}
-
-
-
 
 function procesar (user,linea)
 {
@@ -111,13 +27,11 @@ function procesar (user,linea)
 	{
 		$("#conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='nick' style='color:  "+user.color+"'>"+user.username+"</div><div class='textoconv'><p>"+linea+"</p></div></div>");
 		redimensionarH(null);
-		$("#texto").focus();
 		$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
 	}else
 	{
 		$("#conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='nick' style='color:  "+user.color+"'>"+user.username+"</div><div class='textoconv'><p>"+linea+"</p></div></div>");
 		redimensionarH(null);
-		$("#texto").focus();
 	}
 
 }
@@ -139,6 +53,9 @@ function redimensionarV(valor)
 
 function carga()
 {
+	$(".btn").mouseup(function(){
+		$(this).blur();
+	})
 	$(document).keypress(function(event){
 		var keynum;
 
@@ -155,7 +72,7 @@ function carga()
             	enviar();
             }
             
-        })
+        });
 
 	redimensionarV(0);
 
@@ -178,6 +95,13 @@ function carga()
 		global.win.isMaximizada = false;
 	});
 	
+
+	$("#myModal").on('show.bs.modal', function(e)
+	{
+		$("#nick").val(localStorage.nick);
+		$("#token").val(localStorage.token);
+	});
+
 	global.win.on('resize',function(width,height){
 		console.log("resize");
 		var addicional =0;
@@ -205,6 +129,27 @@ function unirse()
 {
 	if(global.conectado == true)
 	{
+
+		if(global.canalConectado == true)
+		{
+			global.client.part(global.canal);
+			if($("#conversacion").scrollTop()+ $("#conversacion").height()== $("#conversacion")[0].scrollHeight)
+			{
+
+
+				$("#conversacion").append("<br \><div class='row fila'><div class='nick'>System</div><div class='textoconv'><p>Salio del canal</p></div></div>");
+				$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
+
+
+			}else
+			{
+				$("#conversacion").append("<br \><div class='row fila'><div class='nick'>System</div><div class='textoconv'><p>Salio del canal</p></div></div>");
+
+			}
+
+			global.canalConectado = false;
+		}
+
 		global.canal= $('#canal').val();
 		global.client.join(global.canal).then(function(){
 
@@ -250,9 +195,10 @@ function unirse()
 
 
 		});
+}
 if(global.canalConectado)
 {
-	var cronjob=global.client.utils.cronjobs("* 1 * * * *",function(){
+	global.intervalos[global.canal] = setInterval(function(){
 		request('https://tmi.twitch.tv/group/user/' + global.canal.toLowerCase() + '/chatters', function (error, response, body) {
 			if (!error && response.statusCode == 200) {
 				body = JSON.parse(body);
@@ -275,8 +221,7 @@ if(global.canalConectado)
 				}
 			}
 		});
-	});
-	cronjob.start();
+	},120000);
 }
 } 
 }
@@ -327,5 +272,83 @@ function enviar()
 	$("#texto").focus();
 
 
+
+}
+
+
+function conectar()
+{
+
+	localStorage.nick = $("#nick").val();
+	localStorage.token = $("#token").val();
+
+
+
+	global.conectar = true;
+
+	if(global.conectar)
+	{
+		var clientOptions = {
+			options:
+			{
+				debug : true
+
+			},
+			identity: {
+				username: localStorage.nick,
+				password: localStorage.token
+			},
+			channels: []
+		}
+
+
+		global.client = new global.irc.client(clientOptions);
+		global.client.addListener('connectfail', function () {
+			alert("fallo");
+		});
+
+		global.client.addListener('crash', function (message, stack) {
+			alert(message+" "+stack);
+		});
+
+
+		global.client.connect().then(function()
+		{
+			global.conectado = true;
+
+			if($("#conversacion").scrollTop()+ $("#conversacion").height()== $("#conversacion")[0].scrollHeight)
+			{
+
+
+				$("#conversacion").append("<br \><div class='row fila'><div class='nick'>System</div><div class='textoconv'><p>Conectado</p></div></div>");
+				$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
+
+
+			}else
+			{
+				$("#conversacion").append("<br \><div class='row fila'><div class='nick'>System</div><div class='textoconv'><p>Conectado</p></div></div>");
+
+			}
+
+
+
+		});
+
+		global.client.addListener('chat', function(channel,user,message)
+		{
+
+			procesar(user,message);
+
+		});	
+
+
+	}
+	$("#myModal").modal('hide');
+}
+
+function abrirBrowser()
+{
+
+	global.gui.Shell.openExternal("http://twitchapps.com/tmi/");
 
 }
