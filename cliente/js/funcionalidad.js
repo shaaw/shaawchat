@@ -12,7 +12,7 @@ global.irc = require("twitch-irc");
 
 global.conectado = false;
 
-global.canal= "skadoodle";
+global.canal= "";
 
 global.buffer = "";
 
@@ -21,16 +21,44 @@ function procesar (user,linea)
 {
 
 	var hora = new Date();
+	var nuevo = [];
 
+	for(var i in user.emote)
+	{
+		for(var x = 0; x < user.emote[i].length; x++)
+		{
+			var temporal = new Object();
+			var division = user.emote[i][x].split("-");
+			temporal.inicio= division[0];
+			temporal.fin = division[1];
+			temporal.codigo = i;
+			nuevo[nuevo.length] = temporal;
+	
+		}
+	}
+
+	nuevo.sort(function(a,b){
+		return (a.inicio-b.inicio);
+	});
+
+	var indice;
+	var mensajeRetocado = "";
+
+	for(var i = 0; i < nuevo.length;i++)
+	{
+		mensajeRetocado += linea.substring(indice,nuevo[i].inicio-1)+nuevo[i].codigo;
+		indice = nuevo[i].fin+1;
+
+	}
 
 	if($("#conversacion").scrollTop()+ $("#conversacion").height()== $("#conversacion")[0].scrollHeight)
 	{
-		$("#conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='nick' style='color:  "+user.color+"'>"+user.username+"</div><div class='textoconv'><p>"+linea+"</p></div></div>");
+		$("#conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='nick' style='color:  "+user.color+"'>"+user.username+"</div><div class='textoconv'><p>"+mensajeRetocado+"</p></div></div>");
 		redimensionarH(null);
 		$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
 	}else
 	{
-		$("#conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='nick' style='color:  "+user.color+"'>"+user.username+"</div><div class='textoconv'><p>"+linea+"</p></div></div>");
+		$("#conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='nick' style='color:  "+user.color+"'>"+user.username+"</div><div class='textoconv'><p>"+mensajeRetocado+"</p></div></div>");
 		redimensionarH(null);
 	}
 
@@ -56,23 +84,6 @@ function carga()
 	$(".btn").mouseup(function(){
 		$(this).blur();
 	})
-	$(document).keypress(function(event){
-		var keynum;
-
-            if(window.event){ // IE					
-            	keynum = event.keyCode;
-            }else
-            {
-                if(event.which){ // Netscape/Firefox/Opera					
-                	keynum = event.which;
-                }
-            }
-            if(keynum== 13 && $("#texto").is(":focus"))
-            {
-            	enviar();
-            }
-            
-        });
 
 	redimensionarV(0);
 
@@ -119,6 +130,7 @@ function carga()
 		$("#nicks").height((tamano-20)+ "px");
 
 	});
+
 
 
 	
@@ -253,20 +265,6 @@ function enviar()
 {
 	if(global.conectado && global.canalConectado)
 	{
-		if($("#conversacion").scrollTop()+ $("#conversacion").height()== $("#conversacion")[0].scrollHeight)
-		{
-
-
-			$("#conversacion").append("<br \><div class='row fila'><div class='nick'>"+localStorage.nick+"</div><div class='textoconv'><p>"+$("#texto").val()+"</p></div></div>");
-			$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
-
-
-		}else
-		{
-			$("#conversacion").append("<br \><div class='row fila'><div class='nick'>"+localStorage.nick+"</div><div class='textoconv'><p>"+$("#texto").val()+"</p></div></div>");
-
-		}
-
 		global.client.say(global.canal,$('#texto').val());
 	}
 	$("#texto").val("");
@@ -292,7 +290,8 @@ function conectar()
 		var clientOptions = {
 			options:
 			{
-				debug : true
+				debug : true,
+				emitSelf: true
 
 			},
 			identity: {

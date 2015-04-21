@@ -3,8 +3,8 @@
   "main": "index.html",
   "version" : 0.1,
   "window": {
-    "toolbar": false,
-    "frame": false,
+    "toolbar": true,
+    "frame": true,
     "width": 850,
     "min_width": 800
   },
