@@ -195,8 +195,9 @@ function unirse()
 
 
 		});
-}
-if(global.canalConectado)
+
+
+if(global.canalConectado == true)
 {
 	global.intervalos[global.canal] = setInterval(function(){
 		request('https://tmi.twitch.tv/group/user/' + global.canal.toLowerCase() + '/chatters', function (error, response, body) {
