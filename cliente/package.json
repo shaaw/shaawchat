@@ -1,7 +1,7 @@
 {
   "name": "prueba",
   "main": "index.html",
-  "version" : 0.1,
+  "version" : "v0.1.1",
   "window": {
     "toolbar": true,
     "frame": true,
@@ -10,6 +10,6 @@
   },
   "dependencies": {
     "request": "^2.54.0",
-    "twitch-irc": "~1.2.5"
+    "twitch-irc": "~1.2.6"
   }
 }
