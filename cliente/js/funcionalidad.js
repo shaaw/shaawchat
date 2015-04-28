@@ -41,13 +41,16 @@ function procesar (user,linea)
 		return (a.inicio-b.inicio);
 	});
 
-	var indice;
+	var indice= 0;
 	var mensajeRetocado = "";
 
 	for(var i = 0; i < nuevo.length;i++)
 	{
-		mensajeRetocado += linea.substring(indice,nuevo[i].inicio-1)+"<img src='http://static-cdn.jtvnw.net/emoticons/v1/"+nuevo[i].codigo+"/1.0' />";
-		indice = nuevo[i].fin+1;
+		console.log(indice);
+		console.log(parseInt(nuevo[i].inicio)-1);
+		mensajeRetocado += linea.substring(indice,parseInt(nuevo[i].inicio)-1)+"<img src='http://static-cdn.jtvnw.net/emoticons/v1/"+nuevo[i].codigo+"/1.0' />";
+		console.log(mensajeRetocado);		
+		indice = parseInt(nuevo[i].fin)+1;
 
 	}
 	mensajeRetocado += linea.substring(indice);
