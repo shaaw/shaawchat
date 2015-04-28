@@ -33,7 +33,7 @@ function procesar (user,linea)
 			temporal.fin = division[1];
 			temporal.codigo = i;
 			nuevo[nuevo.length] = temporal;
-	
+
 		}
 	}
 
@@ -46,16 +46,19 @@ function procesar (user,linea)
 
 	for(var i = 0; i < nuevo.length;i++)
 	{
-		mensajeRetocado += linea.substring(indice,nuevo[i].inicio-1)+nuevo[i].codigo;
+		mensajeRetocado += linea.substring(indice,nuevo[i].inicio-1)+"<img src='http://static-cdn.jtvnw.net/emoticons/v1/"+nuevo[i].codigo+"/1.0' />";
 		indice = nuevo[i].fin+1;
 
 	}
+	mensajeRetocado += linea.substring(indice);
 
 	if($("#conversacion").scrollTop()+ $("#conversacion").height()== $("#conversacion")[0].scrollHeight)
 	{
 		$("#conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='nick' style='color:  "+user.color+"'>"+user.username+"</div><div class='textoconv'><p>"+mensajeRetocado+"</p></div></div>");
 		redimensionarH(null);
-		$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
+
+		setTimeout(function(){$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight)},100);
+
 	}else
 	{
 		$("#conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='nick' style='color:  "+user.color+"'>"+user.username+"</div><div class='textoconv'><p>"+mensajeRetocado+"</p></div></div>");
@@ -84,7 +87,23 @@ function carga()
 	$(".btn").mouseup(function(){
 		$(this).blur();
 	})
+	$(document).keypress(function(event){		
+		var keynum;		
+		
+        if(window.event){ // IE							
+			keynum = event.keyCode;		
+        }else		
+        {		
+            if(event.which){ // Netscape/Firefox/Opera							
+            	keynum = event.which;		
+            }		
+        }		
+        if(keynum== 13 && $("#texto").is(":focus"))		
+        {		
+        	enviar();		
+        }		
 
+    });
 	redimensionarV(0);
 
 

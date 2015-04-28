@@ -1,6 +1,7 @@
 .cabezera{
 	-webkit-app-region: drag;
 	-webkit-user-select: none;
+	background-color: #2EA8C2;
 }
 
 .controles{
@@ -57,7 +58,7 @@
 	margin-right: 0px;
 	vertical-align: middle;
 
-	font-size: 12px;
+	font-size: 14px;
 }
 
 .timeStamp
