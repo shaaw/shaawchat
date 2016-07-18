@@ -109,6 +109,19 @@ function procesar (user,linea)
 		redimensionarH(null);
 	}
 
+	limitLines();
+
+}
+
+
+function limitLines()
+{
+	console.log($("#conversacion").children().length);
+	if($("#conversacion").children().length > 200)
+	{
+		$("#conversacion").children()[0].remove();
+		$("#conversacion").children()[0].remove();
+	}
 }
 
 function cargaImagen()
