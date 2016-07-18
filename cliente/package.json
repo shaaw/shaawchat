@@ -1,15 +1,17 @@
 {
-  "name": "prueba",
+  "name": "shaawchat",
   "main": "index.html",
-  "version" : "v0.1.2",
+  "author": "Jonathan Onrubia Mogica",
+  "version": "v0.1.2",
   "window": {
-    "toolbar": false,
+    "toolbar": true,
     "frame": false,
-    "width": 850,
+    "width": 900,
+    "height": 500,
     "min_width": 800
   },
   "dependencies": {
-    "request": "^2.54.0",
-    "twitch-irc": "~1.2.6"
+    "tmi.js": "^1.0.1",
+    "unirest": "^0.5.0"
   }
 }

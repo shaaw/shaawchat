@@ -43,6 +43,7 @@
 	width: 100px;
 	float: left;
 	display: block;
+
 }
 .textoconv{
 	float: left;
@@ -58,7 +59,7 @@
 	margin-right: 0px;
 	vertical-align: middle;
 
-	font-size: 14px;
+	font-size: 12px;
 }
 
 .timeStamp
@@ -84,6 +85,9 @@
 	text-decoration: none;
 
 
+}
+p{
+	margin-bottom: 0px;
 }
 
 #nicks{

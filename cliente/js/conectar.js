@@ -2,6 +2,7 @@
 
 function conectar()
 {
+	console.log("no llega");
 
 	localStorage.nick = $("#nick").val();
 	localStorage.token = $("#token").val();
