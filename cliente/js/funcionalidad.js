@@ -12,6 +12,18 @@ global.defaultColors = [
 '#9ACD32','#FF4500','#2E8B57','#DAA520','#D2691E',
 '#5F9EA0','#1E90FF','#FF69B4','#8A2BE2','#00FF7F'
 ],
+
+global.badgesTrans = {};
+
+global.badgesTrans['moderator'] = 'mod';
+global.badgesTrans['subscriber'] = 'subscriber';
+global.badgesTrans['broadcaster'] = 'broadcaster';
+global.badgesTrans['staff'] = 'staff';
+global.badgesTrans['global_mod'] = 'global_mod';
+global.badgesTrans['admin'] = 'admin';
+global.badgesTrans['turbo'] = 'turbo';
+
+
 global.randomColorsChosen = {};
 
 // global.irc = require("tmi.js");
@@ -23,6 +35,38 @@ global.conectado = false;
 global.canal= "";
 
 global.buffer = "";
+
+
+function petition(url)
+{
+	return new Promise(function(resolve, reject) {
+		global.https.get(url, function(res){
+
+			var body1 = '';
+
+			res.on('data', (chunk) => {
+				body1 += chunk;
+
+			});
+
+			res.on('end', function(){
+				var body = JSON.parse(body1);
+
+				resolve(body);
+
+			});
+			res.on('error',function()
+			{
+				reject(Error("fallo peticion"));
+			});
+
+		});
+	});
+
+}
+
+
+
 
 function resolveColor(chan, name, color) {
 	if(color !== null) {
@@ -41,15 +85,29 @@ function resolveColor(chan, name, color) {
 	return color;
 }
 
+
+function popOutMenu(ev)
+{
+	ev.preventDefault();
+
+	console.log(ev);
+	
+	global.menu = new global.gui.Menu();
+	global.menu.append(new global.gui.MenuItem({ label: 'Item A' }));
+	global.menu.append(new global.gui.MenuItem({ label: 'Item B' }));
+	global.menu.append(new global.gui.MenuItem({ type: 'separator' }));
+	global.menu.append(new global.gui.MenuItem({ label: 'Item C' }));
+
+	global.menu.popup(ev.clientX,ev.clientY);
+
+
+}
+
 function procesar (user,linea)
 {
 
 	var hora = new Date();
 	var nuevo = [];
-
-	console.log(user.color);
-
-	console.log(user);
 
 	for(var i in user.emotes)
 	{
@@ -93,22 +151,44 @@ function procesar (user,linea)
 		indice = parseInt(nuevo[i].fin)+1;
 
 	}
+	var textBadges = "";
+
+	if(user.badges != null)
+	{
+		var badges = Object.keys(user.badges);
+
+
+		for(var i = 0; i < badges.length;i++)
+		{
+			var adicionalImg = "";
+			if(scrollBajo)
+			{
+				adicionalImg = "onload='cargaImagen()'";
+			}
+			textBadges += "<img "+ adicionalImg+ " src='"+ global.canalLinks[global.badgesTrans[badges[i]]].image+ "' />";
+		}
+	}
 
 	mensajeRetocado += linea.substring(indice);
 
 	if($("#conversacion").scrollTop()+ $("#conversacion").height()== $("#conversacion")[0].scrollHeight)
 	{
-		$("#conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='nick' style='color: "+resolveColor(global.canal, user.username, user.color)+"'>"+user.username+"</div><div class='textoconv'><p>"+mensajeRetocado+"</p></div></div>");
+		$("#conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='textoconv' >"+ textBadges+" <b class='nick' style='color: "+resolveColor(global.canal, user.username, user.color)+"'>"+user.username+":  </b><div class='mensaje'>"+mensajeRetocado+"</div></div>");
 		redimensionarH(null);
 
 		$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
 
 	}else
 	{
-		$("#conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='nick' style='color: "+resolveColor(global.canal, user.username, user.color)+"'>"+user.username+"</div><div class='textoconv'><p>"+mensajeRetocado+"</p></div></div>");
+		$("#conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='textoconv'>"+ textBadges+" <b class='nick' style='color: "+resolveColor(global.canal, user.username, user.color)+"'>"+user.username+":  </b> <div  class='mensaje'>"+mensajeRetocado+"</div></div>");
 		redimensionarH(null);
 	}
 
+	$( ".nick" ).unbind();
+		$(".nick").contextmenu(function (ev)
+		{
+			popOutMenu(ev);
+		});
 	limitLines();
 
 }
@@ -116,24 +196,22 @@ function procesar (user,linea)
 
 function limitLines()
 {
-	console.log($("#conversacion").children().length);
+	
 	if($("#conversacion").children().length > 200)
 	{
-		$("#conversacion").children()[0].remove();
 		$("#conversacion").children()[0].remove();
 	}
 }
 
 function cargaImagen()
 {
-	console.log("cargamos imagen");
 	$("#conversacion").scrollTop($("#conversacion")[0].scrollHeight);
 }
 
 function redimensionarH(valor)
 {
 
-	var tamano2 = $(".fila").width() - 150-5;
+	var tamano2 = $(".fila").width() - 50-5;
 	$(".textoconv").width(tamano2+"px");
 }
 
@@ -250,6 +328,11 @@ function carga()
         	enviar();		
         }
 
+        if(keynum== 13 && $("#canal").is(":focus"))
+        {
+        	unirse();
+        }
+
 
 
     });
@@ -344,53 +427,89 @@ function unirse()
 				$("#conversacion").append("<br \><div class='row fila'><div class='nick'>System</div><div class='textoconv'><p>Se unio al canal</p></div></div>");
 
 			}
+			petition('https://api.twitch.tv/kraken/chat/' + global.canal.toLowerCase() +'/badges').then(function(result){
+
+				global.canalLinks = result;
+			});
+
+
+			petition('https://tmi.twitch.tv/group/user/' + global.canal.toLowerCase() + '/chatters').then(function(result){
+
+				$("#nicks").empty();
+
+				global.userList[global.canal] = result.chatters.moderators;
+				for(var i = 0; i < result.chatters.moderators.length;i++){
+
+					$("#nicks").append("<option class='moderador'>"+ result.chatters.moderators[i] +"</option>");
+				}
+
+				global.userList[global.canal] = global.userList[global.canal].concat(result.chatters.staff);
+				for(var i = 0; i < result.chatters.staff.length;i++){
+
+					$("#nicks").append("<option class='staff'>"+ result.chatters.staff[i] +"</option>");
+				}
+
+				global.userList[global.canal] = global.userList[global.canal].concat(result.chatters.admins);
+				for(var i = 0; i < result.chatters.admins.length;i++){
+
+					$("#nicks").append("<option class='staff'>"+ result.chatters.admins[i] +"</option>");
+				}
+				global.userList[global.canal] = global.userList[global.canal].concat(result.chatters.global_mods);
+				for(var i = 0; i < result.chatters.global_mods.length;i++){
+
+					$("#nicks").append("<option class='staff'>"+ result.chatters.global_mods[i] +"</option>");
+				}
+
+				global.userList[global.canal] = global.userList[global.canal].concat(result.chatters.viewers);
+				for(var i = 0; i < result.chatters.viewers.length;i++){
+
+					$("#nicks").append("<option class='viewers'>"+ result.chatters.viewers[i] +"</option>");
+				}
+
+				global.userList[global.canal] = global.userList[global.canal].concat(global.emotes);
+
+				global.userList[global.canal].sort();
+
+
+			});
 
 
 
-			global.https.get('https://tmi.twitch.tv/group/user/' + global.canal.toLowerCase() + '/chatters', function(res){
 
 
-
-
-				var body1 = '';
-
-				res.on('data', (chunk) => {
-					body1 += chunk;
-
-				});
-
-				res.on('end', function(){
-					var body = JSON.parse(body1);
+			global.intervalo = setInterval(function(){
+				
+				petition('https://tmi.twitch.tv/group/user/' + global.canal.toLowerCase() + '/chatters').then(function(result){
 
 					$("#nicks").empty();
 
-					global.userList[global.canal] = body.chatters.moderators;
-					for(var i = 0; i < body.chatters.moderators.length;i++){
-						
-						$("#nicks").append("<option class='moderador'>"+ body.chatters.moderators[i] +"</option>");
+					global.userList[global.canal] = result.chatters.moderators;
+					for(var i = 0; i < result.chatters.moderators.length;i++){
+
+						$("#nicks").append("<option class='moderador'>"+ result.chatters.moderators[i] +"</option>");
 					}
 
-					global.userList[global.canal] = global.userList[global.canal].concat(body.chatters.staff);
-					for(var i = 0; i < body.chatters.staff.length;i++){
-						
-						$("#nicks").append("<option class='staff'>"+ body.chatters.staff[i] +"</option>");
+					global.userList[global.canal] = global.userList[global.canal].concat(result.chatters.staff);
+					for(var i = 0; i < result.chatters.staff.length;i++){
+
+						$("#nicks").append("<option class='staff'>"+ result.chatters.staff[i] +"</option>");
 					}
 
-					global.userList[global.canal] = global.userList[global.canal].concat(body.chatters.admins);
-					for(var i = 0; i < body.chatters.admins.length;i++){
-						
-						$("#nicks").append("<option class='staff'>"+ body.chatters.admins[i] +"</option>");
+					global.userList[global.canal] = global.userList[global.canal].concat(result.chatters.admins);
+					for(var i = 0; i < result.chatters.admins.length;i++){
+
+						$("#nicks").append("<option class='staff'>"+ result.chatters.admins[i] +"</option>");
 					}
-					global.userList[global.canal] = global.userList[global.canal].concat(body.chatters.global_mods);
-					for(var i = 0; i < body.chatters.global_mods.length;i++){
-						
-						$("#nicks").append("<option class='staff'>"+ body.chatters.global_mods[i] +"</option>");
+					global.userList[global.canal] = global.userList[global.canal].concat(result.chatters.global_mods);
+					for(var i = 0; i < result.chatters.global_mods.length;i++){
+
+						$("#nicks").append("<option class='staff'>"+ result.chatters.global_mods[i] +"</option>");
 					}
 
-					global.userList[global.canal] = global.userList[global.canal].concat(body.chatters.viewers);
-					for(var i = 0; i < body.chatters.viewers.length;i++){
-						
-						$("#nicks").append("<option class='viewers'>"+ body.chatters.viewers[i] +"</option>");
+					global.userList[global.canal] = global.userList[global.canal].concat(result.chatters.viewers);
+					for(var i = 0; i < result.chatters.viewers.length;i++){
+
+						$("#nicks").append("<option class='viewers'>"+ result.chatters.viewers[i] +"</option>");
 					}
 
 					global.userList[global.canal] = global.userList[global.canal].concat(global.emotes);
@@ -399,73 +518,12 @@ function unirse()
 
 
 				});
-
-			});
-
-
-
-			global.intervalo = setInterval(function(){
-				
-				global.https.get('https://tmi.twitch.tv/group/user/' + global.canal.toLowerCase() + '/chatters', function(res){
-
-
-
-					var body1 = '';
-
-					res.on('data', (chunk) => {
-						body1 += chunk;
-
-					});
-
-					res.on('end', function(){
-						var body = JSON.parse(body1);
-
-						$("#nicks").empty();
-
-						global.userList[global.canal] = body.chatters.moderators;
-						for(var i = 0; i < body.chatters.moderators.length;i++){
-
-							$("#nicks").append("<option class='moderador'>"+ body.chatters.moderators[i] +"</option>");
-						}
-
-						global.userList[global.canal] = global.userList[global.canal].concat(body.chatters.staff);
-						for(var i = 0; i < body.chatters.staff.length;i++){
-
-							$("#nicks").append("<option class='staff'>"+ body.chatters.staff[i] +"</option>");
-						}
-
-						global.userList[global.canal] = global.userList[global.canal].concat(body.chatters.admins);
-						for(var i = 0; i < body.chatters.admins.length;i++){
-
-							$("#nicks").append("<option class='staff'>"+ body.chatters.admins[i] +"</option>");
-						}
-						global.userList[global.canal] = global.userList[global.canal].concat(body.chatters.global_mods);
-						for(var i = 0; i < body.chatters.global_mods.length;i++){
-
-							$("#nicks").append("<option class='staff'>"+ body.chatters.global_mods[i] +"</option>");
-						}
-
-						global.userList[global.canal] = global.userList[global.canal].concat(body.chatters.viewers);
-						for(var i = 0; i < body.chatters.viewers.length;i++){
-
-							$("#nicks").append("<option class='viewers'>"+ body.chatters.viewers[i] +"</option>");
-						}
-
-						global.userList[global.canal] = global.userList[global.canal].concat(global.emotes);
-
-						global.userList[global.canal].sort();
-
-
-
-					});
-
-				});
 			},60000);
 		});
 
 
 
-} 
+	} 
 }
 
 function cerrar()

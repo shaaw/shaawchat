@@ -40,16 +40,22 @@
 	font-weight: bold;
 	color: blue;
 	vertical-align: middle;
-	width: 100px;
+	width: auto;
 	float: left;
 	display: block;
 
 }
 .textoconv{
+	align-items: center;
+	vertical-align: middle;
 	float: left;
-	display: inline;
+	display: flex;
 	height: auto;
 
+}
+.mensaje{
+	float:left;
+	margin-left: 2px;
 }
 
 .fila
