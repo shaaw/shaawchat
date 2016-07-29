@@ -430,7 +430,7 @@ function compareStrings(a, b)
 
 function carga()
 {
-	global.database.cargar();
+	//global.database.cargar();
 	
 	loadEmotes();
 
