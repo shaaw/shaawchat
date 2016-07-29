@@ -2,6 +2,7 @@
 	-webkit-app-region: drag;
 	-webkit-user-select: none;
 	background-color: #2EA8C2;
+	margin-bottom: 5px;
 }
 
 .controles{
@@ -26,7 +27,12 @@
 	width: 100%;
 }
 
-#conversacion{
+.nav-tabs > li .close {
+    margin: -2px 0 0 10px;
+    font-size: 18px;
+}
+
+.conversacion{
 	border: 1px 1px 1px 1px;
 	overflow-y: scroll;
 	height: 200px;
@@ -43,6 +49,7 @@
 	width: auto;
 	float: left;
 	display: block;
+	margin-left: 2px;
 
 }
 .textoconv{
@@ -95,11 +102,11 @@
 p{
 	margin-bottom: 0px;
 }
-
-#nicks{
+.nicks{
 
 	margin-bottom: 0px;
 	margin-top: 0px;
+	width: 100%;
 }
 
 #cabecera{

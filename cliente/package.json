@@ -5,12 +5,15 @@
   "version": "v0.1.2",
   "window": {
     "toolbar": true,
-    "frame": false,
+    "frame": true,
     "width": 900,
     "height": 500,
     "min_width": 800
   },
   "dependencies": {
+    "sequelize": "^3.20.0",
+    "sequelize-cli": "^2.4.0",
+    "sqlite3": "^3.1.4",
     "tmi.js": "^1.0.1",
     "unirest": "^0.5.0"
   }

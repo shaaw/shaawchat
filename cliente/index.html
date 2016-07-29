@@ -26,14 +26,14 @@
 				<div class="form-group">
 					<input id="canal" type="text"  placeholder="Canal">
 				</div>
-				<button id="botonCanal" class="btn btn-default btn-sm" onclick="unirse();">Unirse</button>
+				<button id="botonCanal" class="btn btn-default btn-sm" onclick="unirse();">Unirse</button><button id="botonCanal" class="btn btn-success btn-sm" onclick="joinBot();">Join Bot</button>
 			</div>
 
 
 
 			<!-- Collect the nav links, forms, and other content for toggling -->
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-
+<!--
 				<ul class="nav navbar-nav navbar-right controles">
 					<div class="btn-group btn-group-sm	" role="group" aria-label="...">
 						<button class="btn btn-default navbar-btn" onclick="minimizar();"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
@@ -41,7 +41,7 @@
 						<button class="btn btn-danger navbar-btn" onclick="cerrar();"><span class="glyphicon glyphicon-remove" aria-hidden="true" ></span></button>
 					</div>
 					
-				</ul>
+				</ul> -->
 			</div><!-- /.navbar-collapse -->
 		</div><!-- /.container-fluid -->
 	</nav>
@@ -74,41 +74,45 @@
 	</div>
 	<div class="dinamico">
 		<div class="row maximo">
-			<div class="col-xs-10">
-				<div id="conversacion">
-					<div class="row fila">
-						<div class="nick">
-							System
-						</div>
-						<div class="textoconv">
-							<p>
-								Bienvenid@ al programa de chat de Shaaw,<img src="http://static-cdn.jtvnw.net/emoticons/v1/2197/1.0" /> pulsa el boton conectar de arriba, sigue los pasos y despues unete a un canal.
-							</p>
-						</div>
-					</div>
+			<div class="col-xs-12">
+				<!-- Nav tabs -->
+				<ul id="tabsCanales" class="nav nav-tabs" role="tablist" style="margin-left:2px">
+				
+				</ul>
 
-				</div>
+				<!-- Tab panes -->
+				<div id="tabContent" class="tab-content">
+					
 			</div>
-			<div class="col-xs-2">
-				<select multiple name="nicks" id="nicks" class="form-control">
-				</select>
-			</div>
+
 		</div>
+
+	</div>
+</div>
+
+
+
+
+
+
+
+
+</div>
+</div>
+
+
+
+<div class="row pie maximo">
+	<div class="col-xs-10">
+		<input id="texto" type="text">
+
+	</div>
+	<div class="col-xs-2">
+		<button class="btnenviar" onclick="enviar();">Send</button>
 	</div>
 
 
-
-	<div class="row pie maximo">
-		<div class="col-xs-10">
-			<input id="texto" type="text">
-
-		</div>
-		<div class="col-xs-2">
-			<button class="btnenviar" onclick="enviar();">Send</button>
-		</div>
-
-		
-	</div>
+</div>
 
 
 
