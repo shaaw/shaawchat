@@ -1,0 +1,137 @@
+.cabezera{
+	-webkit-app-region: drag;
+	-webkit-user-select: none;
+	background-color: #2EA8C2;
+	margin-bottom: 5px;
+}
+
+.controles{
+	-webkit-app-region: no-drag;
+	
+}
+.pie{
+	
+	position: relative;
+	bottom: 0;
+}
+.dinamico{
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+}
+
+.maximo{
+	width: 100%;
+}
+#texto{
+	width: 100%;
+}
+
+.nav-tabs > li .close {
+    margin: -2px 0 0 10px;
+    font-size: 18px;
+}
+
+.conversacion{
+	border: 1px 1px 1px 1px;
+	overflow-y: scroll;
+	height: 200px;
+	white-space: normal;
+	word-wrap: break-word;
+	overflow-x: hidden;
+	vertical-align: middle;
+}
+
+.nick{
+	font-weight: bold;
+	color: blue;
+	vertical-align: middle;
+	width: auto;
+	float: left;
+	display: block;
+	margin-left: 2px;
+
+}
+.textoconv{
+	align-items: center;
+	vertical-align: middle;
+	float: left;
+	display: flex;
+	height: auto;
+
+}
+.mensaje{
+	float:left;
+	margin-left: 2px;
+}
+
+.fila
+{
+	margin-bottom: -20px;
+	margin-left: 5px;
+	margin-right: 0px;
+	vertical-align: middle;
+
+	font-size: 12px;
+}
+
+.timeStamp
+{
+	color:#4E4949;
+	font-size: 8px;
+}
+
+
+.btnenviar {
+	font-family: Arial;
+
+	color: #ffffff;
+	font-size: 10px;
+	background: #30ad29;
+	padding: 5px 10px 5px 10px;
+	text-decoration: none;
+	border: solid #1f628d 0px;
+}
+
+.btnenviar:hover {
+	background: #1AD727;
+	text-decoration: none;
+
+
+}
+p{
+	margin-bottom: 0px;
+}
+.nicks{
+
+	margin-bottom: 0px;
+	margin-top: 0px;
+	width: 100%;
+}
+
+#cabecera{
+	border-width: 0px 0px 0px 0px;
+	border-radius: 0px;
+}
+
+#canal
+{
+	-webkit-app-region: no-drag;
+	
+}
+
+#botonCanal
+{
+	-webkit-app-region: no-drag;
+}
+
+.moderador{
+	color: red;
+}
+
+.staff{
+	color: purple;
+}
+.viewer{
+
+}
