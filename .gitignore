@@ -1,0 +1,13 @@
+credits.html
+icudtl.dat
+locales/*
+nacl_irt_x86_64.nexe
+natives_blob.bin
+node_modules/*
+nw_100_percent.pak
+nw_200_percent.pak
+nw_material_100_percent.pak
+nw_material_200_percent.pak
+pnacl/*
+resources.pak
+snapshot_blob.bin
