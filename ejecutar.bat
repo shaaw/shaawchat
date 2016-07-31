@@ -1,1 +1,0 @@
-nw.exe ../shaawchat/cliente/

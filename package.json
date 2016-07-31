@@ -1,6 +1,6 @@
 {
   "name": "shaawchat",
-  "main": "index.html",
+  "main": "./index.html",
   "author": "Jonathan Onrubia Mogica",
   "version": "v0.1.2",
   "window": {
@@ -11,6 +11,7 @@
     "min_width": 800
   },
   "dependencies": {
+    "oboe": "^2.1.2",
     "sequelize": "^3.20.0",
     "sequelize-cli": "^2.4.0",
     "sqlite3": "^3.1.4",
@@ -18,3 +19,4 @@
     "unirest": "^0.5.0"
   }
 }
+

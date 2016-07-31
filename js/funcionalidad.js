@@ -1,7 +1,7 @@
 
 global.gui = require("nw.gui");
 global.nw.require('./lib/consoleHack')(console);
-global.gui.Window.get().showDevTools();
+//global.gui.Window.get().showDevTools();
 global.win = global.gui.Window.get();
 global.win.isMaximizada = false;
 global.canalConectado = false;
@@ -42,9 +42,9 @@ global.canalActual ="";
 global.buffer = "";
 
 
-function systemMsg(user,msg)
+function systemMsg(canal,user,msg)
 {
-	$(".conversacion").append("<br \><div class='row fila'><div class='nick'>"+user+"</div><div class='textoconv'><p>"+msg+"</p></div></div>");
+	$("#" +canal+ " .conversacion").append("<br \><div class='row fila'><div class='nick'>"+user+"</div><div class='textoconv'><p>"+msg+"</p></div></div>");
 }
 
 
@@ -276,13 +276,14 @@ function procesar (canal,user,linea)
 	for(var i = 0; i < nuevo.length;i++)
 	{
 		var adicionalImg = "";
+		
 		if(scrollBajo)
 		{
-			adicionalImg = "onload='cargaImagen()'";
+			adicionalImg = "onload='cargaImagen(event)'";
 		}
 
 
-		mensajeRetocado += linea.substring(indice,parseInt(nuevo[i].inicio)-1)+" <img "+ adicionalImg+ " src='http://static-cdn.jtvnw.net/emoticons/v1/"+nuevo[i].codigo+"/1.0' />";		
+		mensajeRetocado += linea.substring(indice,parseInt(nuevo[i].inicio)-1)+" <img class='emote"+canal +"'' " + adicionalImg+ " src='http://static-cdn.jtvnw.net/emoticons/v1/"+nuevo[i].codigo+"/1.0' />";		
 		indice = parseInt(nuevo[i].fin)+1;
 
 	}
@@ -296,35 +297,43 @@ function procesar (canal,user,linea)
 		for(var i = 0; i < badges.length;i++)
 		{
 			var adicionalImg = "";
+			/*
 			if(scrollBajo)
 			{
-				adicionalImg = "onload='cargaImagen()'";
-			}
-			textBadges += "<img "+ adicionalImg+ " src='"+ global.canalLinks[canal][global.badgesTrans[badges[i]]].image+ "' />";
+				adicionalImg = "onload='cargaImagen(event)'";
+			}*/
+			if(global.canalLinks[canal][global.badgesTrans[badges[i]]]){
+
+				textBadges += "<img "+ adicionalImg+ " src='"+ global.canalLinks[canal][global.badgesTrans[badges[i]]].image+ "' />";
+			}	
 		}
 	}
 
 	mensajeRetocado += linea.substring(indice);
+	
 
 	if($("#" +canal+ " .conversacion").scrollTop()+ $("#" +canal+ " .conversacion").height()== $("#" +canal+ " .conversacion")[0].scrollHeight)
 	{
 		$("#" +canal+ " .conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='textoconv' >"+ textBadges+" <b class='nick' style='color: "+resolveColor(global.canal, user.username, user.color)+"'>"+user.username+":  </b><div class='mensaje'>"+mensajeRetocado+"</div></div>");
-		redimensionarH(null);
+		redimensionarH(0);
 
 		$("#" +canal+ " .conversacion").scrollTop($("#" +canal+ " .conversacion")[0].scrollHeight);
+	/*	$(".emotes"+canal).unbind();
+	$(".emotes"+canal).load(cargaImagen);*/
 
-	}else
-	{
-		$("#" +canal+ " .conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='textoconv'>"+ textBadges+" <b class='nick' style='color: "+resolveColor(global.canal, user.username, user.color)+"'>"+user.username+":  </b> <div  class='mensaje'>"+mensajeRetocado+"</div></div>");
-		redimensionarH(null);
-	}
 
-	$( ".nick" ).unbind();
-	$(".nick").contextmenu(function (ev)
-	{
-		popOutMenu(ev);
-	});
-	limitLines(canal);
+}else
+{
+	$("#" +canal+ " .conversacion").append("<br \><div class='row fila'><div class='timeStamp'>"+hora.getHours()+":"+hora.getMinutes()+"</div><div class='textoconv'>"+ textBadges+" <b class='nick' style='color: "+resolveColor(global.canal, user.username, user.color)+"'>"+user.username+":  </b> <div  class='mensaje'>"+mensajeRetocado+"</div></div>");
+	redimensionarH(0);
+}
+
+$( ".nick" ).unbind();
+$(".nick").contextmenu(function (ev)
+{
+	popOutMenu(ev);
+});
+limitLines(canal);
 
 }
 
@@ -338,22 +347,28 @@ function limitLines(canal)
 	}
 }
 
-function cargaImagen()
+function cargaImagen(canal)
 {
-	$(".conversacion").scrollTop($(".conversacion")[0].scrollHeight);
+
+//	console.log(canal.target);
+
+var conversacion =  $(canal.target).parent().parent().parent().parent();
+
+conversacion.scrollTop(conversacion[0].scrollHeight);
+//	console.log("cargamos imagen");
 }
 
 function redimensionarH(valor)
 {
 
-	var tamano2 = $("#tabContent").width()*0.83 -5;
+	var tamano2 = $("#tabContent").width()*0.75;
 	$(".textoconv").width(tamano2+"px");
 }
 
 function redimensionarV(valor)
 {
 
-	var tamano = global.win.height-20-26-72-valor;
+	var tamano = global.win.height-25-26-72-valor;
 	$(".conversacion").height(tamano+"px");
 
 	$(".nicks").height((tamano-20)+ "px");
@@ -440,9 +455,42 @@ function carga()
 
 
 	window.addEventListener('keydown',function(e){
-		if(e.keyCode === 9 && $("#texto").is(":focus")){
-			e.preventDefault();
-			autocompletar(global.canalActual);
+
+		if(e.keyCode === 9 && e.ctrlKey && $("#texto").is(":focus")){
+			
+			if(global.conectado && global.canalActual){
+				
+				var position = global.canales.indexOf(global.canalActual);
+
+
+				if(e.shiftKey)
+				{
+					position--;
+				}else
+				position++;
+
+				if(position >= global.canales.length)
+				{
+					position = 0;
+				}
+
+				if(position < 0)
+				{
+					position = global.canales.length-1;
+				}
+
+				$("#tab"+global.canales[position]).tab("show");
+				global.canalActual = global.canales[position];
+
+			}
+		}else if(e.keyCode === 9 && $("#texto").is(":focus")){
+			if(global.conectado && global.canalActual)
+			{
+
+				
+				e.preventDefault();
+				autocompletar(global.canalActual);
+			}
 		}
 	});
 
@@ -457,8 +505,10 @@ function carga()
             	keynum = event.which;		
             }		
         }
-
-        if(keynum== 13 && $("#texto").is(":focus"))		
+        if(keynum == 9 && event.cntrlKey)
+        {
+        	console.log("control tab");
+        }else if(keynum== 13 && $("#texto").is(":focus"))		
         {		
         	enviar();		
         }
@@ -525,6 +575,20 @@ function carga()
 }
 
 
+
+function anyadirAlselector(canal,lista,iteracion)
+{
+
+	if(iteracion < lista.length)
+	{
+		//console.log("llamamos al siguiente");
+		$("#"+canal+ " .nicks").append("<option class='viewers'>"+ lista[iteracion] +"</option>");
+
+		setTimeout(anyadirAlselector(canal,lista,iteracion+1),0);
+	}
+}
+
+
 function unirse()
 {
 	if(global.conectado == true)
@@ -548,6 +612,10 @@ function unirse()
 			redimensionarV(0);
 			redimensionarH(0);
 			
+
+			var anyadir = ""
+
+			$("#leave").removeAttr('disabled');
 			$("#tab"+global.canalActual).tab("show");
 
 			$(".tabCanal a").unbind();
@@ -555,28 +623,60 @@ function unirse()
 			$(".tabCanal a").on("click",function (e){
 				var target = $(e.target).attr("href") // activated tab
 				global.canalActual = target.substring(1);
-				console.log(global.canalActual);
 			});
 
+			global.userList[canal] = [];
+			var oboe = require('oboe');
 
-			petition('https://api.twitch.tv/kraken/chat/' + canal.toLowerCase() +'/badges').then(function(result){
+			oboe('https://tmi.twitch.tv/group/user/' + canal.toLowerCase() + '/chatters')
 
-				console.log(canal);
-				global.canalLinks[canal] = result;
-			});
+			.node('moderators[*]', function( moderator ){
 
+				anyadir+= "<option class='moderador'>"+ moderator +"</option>";
 
-			petition('https://tmi.twitch.tv/group/user/' + canal.toLowerCase() + '/chatters').then(function(result){
+			})
+			.node('viewers.*', function( viewer ){
+				anyadir += "<option class='viewers'>"+ viewer +"</option>";
 
-				console.log(canal);
-				$("#canal .nicks").empty();
+			})
+			.node("chatter_count", function (argument) {
+				console.log(argument);
+				if(argument > 5000)
+				{
+					console.log("cancelamos");
+					this.abort();
+				}
+			})  
+			.done(function(result){
 
 				global.userList[canal] = result.chatters.moderators;
+				global.userList[canal] = global.userList[canal].concat(result.chatters.staff);
+				global.userList[canal] = global.userList[canal].concat(result.chatters.admins);
+				global.userList[canal] = global.userList[canal].concat(result.chatters.global_mods);
+				global.userList[canal] = global.userList[canal].concat(result.chatters.viewers);
+
+				$("#"+canal+" .nicks").empty();
+
+				$("#"+canal+ " .nicks").append(anyadir);
+				
+
+				$( "#"+canal+ " .nicks option" ).unbind();
+				$( "#"+canal+ " .nicks option").contextmenu(function (ev)
+				{
+					$(ev.target).prop('selected',true);
+					popOutMenu(ev);
+				});
+				
+
+				/*
+				global.userList[canal] = result.chatters.moderators;
+				var moderators = ""
 				for(var i = 0; i < result.chatters.moderators.length;i++){
 
-					$("#"+canal+ " .nicks").append("<option class='moderador'>"+ result.chatters.moderators[i] +"</option>");
+					moderators+= "<option class='moderador'>"+ result.chatters.moderators[i] +"</option>";
 				}
 
+				$("#"+canal+ " .nicks").append(moderators);
 				global.userList[canal] = global.userList[canal].concat(result.chatters.staff);
 				for(var i = 0; i < result.chatters.staff.length;i++){
 
@@ -595,17 +695,40 @@ function unirse()
 				}
 
 				global.userList[canal] = global.userList[canal].concat(result.chatters.viewers);
+				
+
+		//		anyadirAlselector(canal,result.chatters.viewers,0);
+
+				var viewers = "";
+
 				for(var i = 0; i < result.chatters.viewers.length;i++){
 
-					$("#"+canal+ " .nicks").append("<option class='viewers'>"+ result.chatters.viewers[i] +"</option>");
+					viewers += "<option class='viewers'>"+ result.chatters.viewers[i] +"</option>";
 				}
-				
+				$("#"+canal+ " .nicks").append(viewers);
 
 				global.userList[canal] = global.userList[canal].concat(global.emotes);
 
 				global.userList[canal].sort();
 
+				$( "#"+canal+ " .nicks option" ).unbind();
+				$( "#"+canal+ " .nicks option").contextmenu(function (ev)
+				{
+					$(ev.target).prop('selected',true);
+					popOutMenu(ev);
+				});
+				*/
+				
 
+			});
+
+			global.userList[canal] = global.userList[canal].concat(global.emotes);
+
+			global.userList[canal].sort();
+
+			petition('https://api.twitch.tv/kraken/chat/' + canal.toLowerCase() +'/badges').then(function(result){
+
+				global.canalLinks[canal] = result;
 			});
 
 
@@ -614,52 +737,63 @@ function unirse()
 
 			global.intervalo = setInterval(function(){
 
-				petition('https://tmi.twitch.tv/group/user/' + canal.toLowerCase() + '/chatters').then(function(result){
 
-					$("#"+canal+ " .nicks").empty();
+				anyadir = "";
+
+				var oboe = require('oboe');
+
+				oboe('https://tmi.twitch.tv/group/user/' + canal.toLowerCase() + '/chatters')
+				.node('chatter_count', function (dato) {
+					if(data > 10000)
+					{
+						this.abort();
+					}
+				})
+				.node('moderators[*]', function( moderator ){
+
+					anyadir+= "<option class='moderador'>"+ moderator +"</option>";
+
+				}).node('viewers.*', function( viewer ){
+					anyadir += "<option class='viewers'>"+ viewer +"</option>";
+
+				}).node("chatter_count", function (argument) {
+					console.log(argument);
+					if(argument > 5000)
+					{
+						console.log("cancelamos");
+						this.abort();
+					}
+				}) 
+				.done(function(result){
 
 					global.userList[canal] = result.chatters.moderators;
-					for(var i = 0; i < result.chatters.moderators.length;i++){
-
-						$("#"+canal+ " .nicks").append("<option class='moderador'>"+ result.chatters.moderators[i] +"</option>");
-					}
-
 					global.userList[canal] = global.userList[canal].concat(result.chatters.staff);
-					for(var i = 0; i < result.chatters.staff.length;i++){
-
-						$("#"+canal+ " .nicks").append("<option class='staff'>"+ result.chatters.staff[i] +"</option>");
-					}
-
 					global.userList[canal] = global.userList[canal].concat(result.chatters.admins);
-					for(var i = 0; i < result.chatters.admins.length;i++){
-
-						$("#"+canal+ " .nicks").append("<option class='staff'>"+ result.chatters.admins[i] +"</option>");
-					}
 					global.userList[canal] = global.userList[canal].concat(result.chatters.global_mods);
-					for(var i = 0; i < result.chatters.global_mods.length;i++){
-
-						$("#"+canal+ " .nicks").append("<option class='staff'>"+ result.chatters.global_mods[i] +"</option>");
-					}
-
 					global.userList[canal] = global.userList[canal].concat(result.chatters.viewers);
-					for(var i = 0; i < result.chatters.viewers.length;i++){
 
-						$("#"+canal+ " .nicks").append("<option class='viewers'>"+ result.chatters.viewers[i] +"</option>");
-					}
+					$("#"+canal+" .nicks").empty();
 
-					userList = global.userList[canal];
-
-					//global.database.periodic(userList,canal);
-
-					global.userList[canal] = global.userList[canal].concat(global.emotes);
-
-					global.userList[canal].sort();
+					$("#"+canal+" .nicks").append(anyadir);
+					
+					$( "#"+canal+ " .nicks option" ).unbind();
+					$( "#"+canal+ " .nicks option").contextmenu(function (ev)
+					{
+						$(ev.target).prop('selected',true);
+						popOutMenu(ev);
+					});
 
 
 				});
+
+				global.userList[canal] = global.userList[canal].concat(global.emotes);
+
+				global.userList[canal].sort();
+
 			},60000);
+			
 		}).catch(function(err) {
-    		console.log(err);
+			console.log(err);
 		});
 
 
@@ -788,6 +922,14 @@ function conectar()
 			procesar(channel.substring(1),user,message);
 
 		});	
+/*
+		global.client.on('timeout', function(channel,user,reason,duration)
+		{
+
+			systemMsg(channel.substring(1),"System", user+ " has been timeout for "+ duration +" seconds");
+
+		});	
+		*/
 
 
 	}
@@ -800,3 +942,51 @@ function abrirBrowser()
 	global.gui.Shell.openExternal("http://twitchapps.com/tmi/");
 
 }
+
+function leave() {
+
+	global.client.part(global.canalActual).then(function (argument) {
+
+
+		console.log("salimos del canal");
+		var position = global.canales.indexOf(global.canalActual);		
+
+		var canalABorrar = global.canalActual;
+
+		var positionantigua = position;
+
+		position--;
+
+		if(position >= global.canales.length)
+		{
+			position = 0;
+		}
+
+		if(position < 0)
+		{
+			position = global.canales.length-1;
+		}
+
+		$("#tab"+global.canales[position]).tab("show");
+		global.canalActual = global.canales[position];
+	
+
+		console.log(canalABorrar);
+		$("#tab"+canalABorrar).parent().remove();
+		$("#"+canalABorrar).remove();
+		global.canales.splice(positionantigua,1);
+
+		console.log(global.canales.length);
+		if(global.canales.length == 0)
+		{
+			$("#leave").attr('disabled','disabled');
+		}
+
+
+
+		console.log("salir del canal "+argument);
+	});
+	
+
+}
+
