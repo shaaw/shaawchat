@@ -344,6 +344,7 @@ function limitLines(canal)
 	if($("#"+canal+" .conversacion").children().length > 200)
 	{
 		$("#"+canal+" .conversacion").children()[0].remove();
+		$("#"+canal+" .conversacion").children()[0].remove();
 	}
 }
 
@@ -391,7 +392,7 @@ function autocompletar(canal)
 			busqueda = texto.charAt(i) + busqueda;
 		}
 	}
-
+	console.log(global.userList[canal]);
 	var result = search(global.userList[canal],busqueda);
 	if(result.found)
 	{
@@ -446,6 +447,22 @@ function compareStrings(a, b)
 function carga()
 {
 	//global.database.cargar();
+
+	if(global.nw.App.argv[1] == "dev")
+	{
+		global.env = "dev";
+	}
+
+	if(global.env == 'dev')
+	{
+		global.gui.Window.get().showDevTools();
+	}else{
+		console.log(global.nw.App.manifest['version']);
+	}
+
+
+
+
 	
 	loadEmotes();
 
@@ -593,15 +610,18 @@ function unirse()
 {
 	if(global.conectado == true)
 	{
-		global.client.join($('#canal').val()).then(function(userstate){
+		var canal = $('#canal').val().toLowerCase();
+		global.client.join(canal).then(function(userstate){
+
+			
 			console.log(userstate);
 			global.canales.push($('#canal').val());
 			
 
-			var canal = $('#canal').val();
+			
 			var hora = new Date()
 
-			global.canalActual=$('#canal').val();
+			global.canalActual=canal;
 			
 
 			$("#tabsCanales").append('<li class="tabCanal" role="presentation" ><a id="tab'+global.canalActual+'" href="#'+global.canalActual+'" aria-controls="'+global.canalActual+'" role="tab" data-toggle="tab">'+global.canalActual+'</a></li>');
@@ -640,7 +660,6 @@ function unirse()
 
 			})
 			.node("chatter_count", function (argument) {
-				console.log(argument);
 				if(argument > 5000)
 				{
 					console.log("cancelamos");
@@ -667,6 +686,9 @@ function unirse()
 					popOutMenu(ev);
 				});
 				
+				global.userList[canal] = global.userList[canal].concat(global.emotes);
+
+				global.userList[canal].sort();
 
 				/*
 				global.userList[canal] = result.chatters.moderators;
@@ -722,10 +744,9 @@ function unirse()
 
 			});
 
-			global.userList[canal] = global.userList[canal].concat(global.emotes);
+			
 
-			global.userList[canal].sort();
-
+			
 			petition('https://api.twitch.tv/kraken/chat/' + canal.toLowerCase() +'/badges').then(function(result){
 
 				global.canalLinks[canal] = result;
@@ -783,19 +804,20 @@ function unirse()
 						popOutMenu(ev);
 					});
 
+					global.userList[canal] = global.userList[canal].concat(global.emotes);
+
+					global.userList[canal].sort();
 
 				});
 
-				global.userList[canal] = global.userList[canal].concat(global.emotes);
-
-				global.userList[canal].sort();
+				
 
 			},60000);
 			
 		}).catch(function(err) {
+
 			console.log(err);
 		});
-
 
 
 	} 
@@ -855,6 +877,7 @@ function loadEmotes()
 		res.on('end', function(){
 			var body = JSON.parse(body1);
 			global.emotes = Object.keys(body.emotes);
+			console.log(global.emotes);
 
 		});
 
@@ -969,7 +992,7 @@ function leave() {
 
 		$("#tab"+global.canales[position]).tab("show");
 		global.canalActual = global.canales[position];
-	
+
 
 		console.log(canalABorrar);
 		$("#tab"+canalABorrar).parent().remove();
