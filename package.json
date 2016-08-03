@@ -2,7 +2,7 @@
   "name": "shaawchat",
   "main": "./index.html",
   "author": "Jonathan Onrubia Mogica",
-  "version": "v1.0.0",
+  "version": "v0.1.0",
   "window": {
     "toolbar": true,
     "frame": true,
