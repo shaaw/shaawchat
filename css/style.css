@@ -11,7 +11,7 @@
 }
 .pie{
 	
-	position: relative;
+	position: absolute;
 	bottom: 0;
 }
 .dinamico{
@@ -25,6 +25,10 @@
 }
 #texto{
 	width: 100%;
+}
+
+#header{
+	color: black;
 }
 
 .nav-tabs > li .close {
