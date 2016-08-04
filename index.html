@@ -15,7 +15,7 @@
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
 				
-				<a id="header" class="navbar-brand"  href="#">Shaawchat</a>
+				<a id="header" class="navbar-brand"  href="#" data-toggle="tooltip" data-placement="right" title="Connected" data-trigger="manual">Shaawchat</a>
 			</div>
 			<ul class="nav navbar-nav">
 				<li>
@@ -26,7 +26,7 @@
 				<div class="form-group">
 					<input id="canal" type="text"  placeholder="Canal">
 				</div>
-				<button id="botonCanal" class="btn btn-success btn-sm" onclick="unirse();">Join</button>
+				<button id="botonCanal" class="btn btn-success btn-sm" disabled="disabled" onclick="unirse();">Join</button>
 				<!---<button id="botonCanal" class="btn btn-success btn-sm" onclick="joinBot();">Join Bot</button>-->
 			</div>
 
@@ -45,15 +45,32 @@
 			</div><!-- /.navbar-collapse -->
 		</div><!-- /.container-fluid -->
 	</nav>
+	<div class="modal fade" id="newVersionModal" tabindex="-1" role="dialog" aria-labelledby="newVersionModal" aria-hidden="true" data-backdrop="static">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="newVersionModal">There is a new version of the app</h4>
+				</div>
+				<div class="modal-body">
+					You have an older version of the app, (version info) visit the website to download it.
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" onclick="openWebsite();">Visit Website</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h4 class="modal-title" id="myModalLabel">Conectar</h4>
+					<h4 class="modal-title" id="myModalLabel">Connect</h4>
 				</div>
 				<div class="modal-body">
 					
-					<label>Introduce tu nick de twitch y copia logueate al darle al boton de abajo, y copia la cadena que te aparecera</label>
+					<label>Type your Twitch user name and copy the code provided when you authenticate yourself following the button below.</label>
 					<div class="form-group">
 						<label for="exampleInputEmail1">Twitch username</label>
 						<input type="user" class="form-control" id="nick" placeholder="Twitch User">
@@ -62,12 +79,12 @@
 						<label for="exampleInputPassword1">Token</label>
 						<input type="text" class="form-control" id="token" placeholder="Token">
 					</div>
-					<button class="btn btn-info" onclick="abrirBrowser();">Abrir pagina de autentificacion</button><br \>
+					<button class="btn btn-info" onclick="abrirBrowser();">Open autentification page</button><br \>
 
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
-					<button type="button" class="btn btn-success" onclick="conectar();">Conectar</button>
+					<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-success" onclick="conectar();">Connect</button>
 				</div>
 			</div>
 		</div>
@@ -77,19 +94,19 @@
 			<div class="col-xs-12">
 				<!-- Nav tabs -->
 				<ul id="tabsCanales" class="nav nav-tabs" role="tablist" style="margin-left:2px">
-				
+
 				</ul>
 
 				<!-- Tab panes -->
 				<div id="tabContent" class="tab-content">
-				
+
 					
+				</div>
+
 			</div>
 
 		</div>
-
 	</div>
-</div>
 
 
 

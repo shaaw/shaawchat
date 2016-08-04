@@ -2,7 +2,7 @@
   "name": "shaawchat",
   "main": "./index.html",
   "author": "Jonathan Onrubia Mogica",
-  "version": "v1.0.0",
+  "version": "v0.1.0",
   "window": {
     "toolbar": true,
     "frame": true,
@@ -14,10 +14,7 @@
     "cheerio": "^0.20.0",
     "oboe": "^2.1.2",
     "semver": "^5.3.0",
-    "sequelize": "^3.20.0",
-    "sequelize-cli": "^2.4.0",
     "sqlite3": "^3.1.4",
-    "tmi.js": "^1.0.1",
-    "unirest": "^0.5.0"
+    "tmi.js": "^1.0.1"
   }
 }

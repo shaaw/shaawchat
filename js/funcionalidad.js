@@ -448,6 +448,18 @@ function carga()
 {
 	//global.database.cargar();
 
+
+
+	checkVersion().then(function (version) {
+		var semver = require('semver');
+		var versionActual = global.nw.App.manifest.version;
+		var versionServer = version;
+		if(semver.gt(versionServer,versionActual))
+			$("#newVersionModal").modal("show");
+	});
+
+	
+
 	if(global.nw.App.argv[1] == "dev")
 	{
 		global.env = "dev";
@@ -463,7 +475,7 @@ function carga()
 
 
 
-	
+	$("#header").tooltip(null);
 	loadEmotes();
 
 	$(".btn").mouseup(function(){
@@ -923,10 +935,13 @@ function conectar()
 
 		global.client = new tmi.client(clientOptions);
 		global.client.addListener('connectfail', function () {
+			global.conectado = false;
+			$("#botonCanal").attr('disabled','disabled');
 			alert("fallo");
 		});
 
 		global.client.addListener('crash', function (message, stack) {
+			global.conectado = false;
 			alert(message+" "+stack);
 		});
 
@@ -935,6 +950,13 @@ function conectar()
 		{
 			global.conectado = true;
 
+			$("#botonCanal").removeAttr("disabled");
+
+			$('#header').tooltip('show');
+			setTimeout(function () {
+				$('#header').tooltip('hide');
+			},5000);
+			$("#myModal").modal('hide');
 
 
 		});
@@ -956,7 +978,7 @@ function conectar()
 
 
 	}
-	$("#myModal").modal('hide');
+	
 }
 
 function abrirBrowser()
@@ -1013,3 +1035,37 @@ function leave() {
 
 }
 
+function openWebsite() {
+	global.gui.Shell.openExternal("https://github.com/shaaw/shaawchat/releases");
+}
+
+
+
+function checkVersion() {
+
+	return new Promise(function(resolve, reject) {
+		global.https.get('https://github.com/shaaw/shaawchat/releases/', function(res){
+
+			var body1 = '';
+
+			res.on('data', (chunk) => {
+				body1 += chunk;
+
+			});
+
+			res.on('end', function(){
+				var cheerio = require('cheerio');
+				var page = cheerio.load(body1);
+				var version = page(".tag-references li span");
+				resolve(version.text());
+
+			});
+			res.on('error',function()
+			{
+				reject(Error("fallo peticion"));
+			});
+
+		});
+	});
+	
+}
